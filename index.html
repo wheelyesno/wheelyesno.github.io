@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yes or No Decision Wheel</title>
+    
+    <!-- SEO Optimized Title & Meta -->
+    <title>Yes or No Decision Wheel - Free Online Random Decision Maker Tool</title>
+    <meta name="description" content="Free Yes or No Decision Wheel - Make quick decisions with our colorful spinning wheel. Perfect for settling debates, choosing options, and making random yes/no choices instantly.">
+    <meta name="keywords" content="decision wheel, yes no wheel, random decision maker, choice spinner, decision tool, yes or no generator, free decision maker">
+    <meta name="author" content="Decision Wheel Team">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Yes or No Decision Wheel - Free Online Decision Maker">
+    <meta property="og:description" content="Make quick yes/no decisions with our free colorful spinning wheel tool. Perfect for settling debates and choosing between options.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/decision-wheel">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Yes or No Decision Wheel - Free Decision Maker">
+    <meta name="twitter:description" content="Free spinning wheel to make yes/no decisions instantly. Colorful, fair, and fun!">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yourusername.github.io/decision-wheel">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    
     <style>
         * {
             margin: 0;
@@ -20,6 +43,52 @@
             align-items: center;
             justify-content: center;
             color: #333;
+        }
+
+        /* Top Navigation Styles */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #ff9a9e;
         }
 
         .container {
@@ -51,32 +120,22 @@
             overflow: hidden;
             border: 8px solid #fff;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
-            transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .section {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: 100% 100%;
+        .wheel svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 50%;
         }
-
-        .section:nth-child(1) { background: #FF6B6B; transform: rotate(0deg); }
-        .section:nth-child(2) { background: #4ECDC4; transform: rotate(60deg); }
-        .section:nth-child(3) { background: #45B7D1; transform: rotate(120deg); }
-        .section:nth-child(4) { background: #96CEB4; transform: rotate(180deg); }
-        .section:nth-child(5) { background: #FFEAA7; transform: rotate(240deg); }
-        .section:nth-child(6) { background: #DDA0DD; transform: rotate(300deg); }
 
         .section-text {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-weight: bold;
+            font-family: Arial, sans-serif;
             font-size: 18px;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-weight: bold;
+            fill: white;
+            dominant-baseline: middle;
+            text-anchor: middle;
         }
 
         .tap-button {
@@ -195,12 +254,26 @@
         }
 
         @media (max-width: 768px) {
+            .nav-menu {
+                gap: 15px;
+                font-size: 14px;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+
             .wheel-container {
                 width: 280px;
                 height: 280px;
             }
 
             .wheel {
+                width: 280px;
+                height: 280px;
+            }
+
+            .wheel svg {
                 width: 280px;
                 height: 280px;
             }
@@ -219,6 +292,10 @@
                 padding: 8px 15px;
                 font-size: 14px;
             }
+
+            .section-text {
+                font-size: 14px;
+            }
         }
 
         .spinning {
@@ -227,37 +304,58 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎯 Yes or No Decision Wheel</h1>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="#" class="logo">🎯 Decision Wheel</a>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#how-to-use">How to Use</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 80px;">
+        <h1 id="home">🎯 Yes or No Decision Wheel</h1>
         
         <div class="wheel-container">
             <div class="pointer"></div>
             <div class="wheel" id="wheel">
-                <div class="section">
-                    <div class="section-text">YES</div>
-                </div>
-                <div class="section">
-                    <div class="section-text">NO</div>
-                </div>
-                <div class="section">
-                    <div class="section-text">YES</div>
-                </div>
-                <div class="section">
-                    <div class="section-text">NO</div>
-                </div>
-                <div class="section">
-                    <div class="section-text">YES</div>
-                </div>
-                <div class="section">
-                    <div class="section-text">NO</div>
-                </div>
+                <svg width="350" height="350" viewBox="0 0 350 350">
+                    <!-- Section 1: YES (0-60 degrees) -->
+                    <path d="M 175,175 L 175,0 A 175,175 0 0,1 326.25,87.5 z" fill="#FF6B6B"/>
+                    <text x="240" y="70" class="section-text" transform="rotate(30 240 70)">YES</text>
+                    
+                    <!-- Section 2: NO (60-120 degrees) -->
+                    <path d="M 175,175 L 326.25,87.5 A 175,175 0 0,1 326.25,262.5 z" fill="#4ECDC4"/>
+                    <text x="285" y="175" class="section-text" transform="rotate(90 285 175)">NO</text>
+                    
+                    <!-- Section 3: YES (120-180 degrees) -->
+                    <path d="M 175,175 L 326.25,262.5 A 175,175 0 0,1 175,350 z" fill="#45B7D1"/>
+                    <text x="240" y="280" class="section-text" transform="rotate(150 240 280)">YES</text>
+                    
+                    <!-- Section 4: NO (180-240 degrees) -->
+                    <path d="M 175,175 L 175,350 A 175,175 0 0,1 23.75,262.5 z" fill="#96CEB4"/>
+                    <text x="110" y="280" class="section-text" transform="rotate(210 110 280)">NO</text>
+                    
+                    <!-- Section 5: YES (240-300 degrees) -->
+                    <path d="M 175,175 L 23.75,262.5 A 175,175 0 0,1 23.75,87.5 z" fill="#FFEAA7"/>
+                    <text x="65" y="175" class="section-text" transform="rotate(270 65 175)">YES</text>
+                    
+                    <!-- Section 6: NO (300-360 degrees) -->
+                    <path d="M 175,175 L 23.75,87.5 A 175,175 0 0,1 175,0 z" fill="#DDA0DD"/>
+                    <text x="110" y="70" class="section-text" transform="rotate(330 110 70)">NO</text>
+                </svg>
             </div>
             <button class="tap-button" id="tapButton">TAP</button>
         </div>
 
         <div class="result" id="result"></div>
 
-        <div class="info-section">
+        <div class="info-section" id="how-to-use">
             <h2>🎲 How to Use</h2>
             <ul>
                 <li><strong>Simple Decision Making:</strong> Tap the center button to spin the wheel and get your yes or no answer</li>
@@ -268,14 +366,16 @@
             </ul>
         </div>
 
-        <div class="info-section">
+        <div class="info-section" id="about">
             <h2>✨ What is This?</h2>
             <p>The Yes or No Decision Wheel is a fun and simple tool to help you make quick decisions. When you're stuck between two choices or need a random yes/no answer, just tap the button and let the colorful wheel decide for you! The wheel contains 6 sections with equal chances for "Yes" and "No" results.</p>
         </div>
 
-        <div class="info-section">
+        <div class="info-section" id="features">
             <h2>🌟 Features</h2>
             <ul>
+                <li><strong>Equal Slices:</strong> Perfect 60-degree sections for fair results</li>
+                <li><strong>Centered Text:</strong> YES/NO text perfectly centered in each slice</li>
                 <li><strong>Colorful Design:</strong> Beautiful gradient colors make every spin visually appealing</li>
                 <li><strong>Smooth Animation:</strong> Realistic spinning physics with gradual slowdown</li>
                 <li><strong>Equal Probability:</strong> Fair 50/50 chance for yes or no results</li>
@@ -286,7 +386,7 @@
         </div>
     </div>
 
-    <footer class="footer">
+    <footer class="footer" id="contact">
         <div class="footer-links">
             <a href="#about">About Us</a>
             <a href="#contact">Contact Us</a>
@@ -306,15 +406,16 @@
         const result = document.getElementById('result');
         
         let isSpinning = false;
+        let currentRotation = 0; // Track current rotation
 
-        // Define the sections and their corresponding results
+        // Define the sections and their corresponding results (each section is exactly 60 degrees)
         const sections = [
-            { angle: 30, result: 'YES! 🎉' },   // Section 1 center
-            { angle: 90, result: 'NO! 🚫' },    // Section 2 center  
-            { angle: 150, result: 'YES! 🎉' },  // Section 3 center
-            { angle: 210, result: 'NO! 🚫' },   // Section 4 center
-            { angle: 270, result: 'YES! 🎉' },  // Section 5 center
-            { angle: 330, result: 'NO! 🚫' }    // Section 6 center
+            { angle: 30, result: 'YES! 🎉' },   // Section 1 center (0-60°)
+            { angle: 90, result: 'NO! 🚫' },    // Section 2 center (60-120°)
+            { angle: 150, result: 'YES! 🎉' },  // Section 3 center (120-180°)
+            { angle: 210, result: 'NO! 🚫' },   // Section 4 center (180-240°)
+            { angle: 270, result: 'YES! 🎉' },  // Section 5 center (240-300°)
+            { angle: 330, result: 'NO! 🚫' }    // Section 6 center (300-360°)
         ];
 
         tapButton.addEventListener('click', function() {
@@ -324,26 +425,32 @@
             result.textContent = '';
             wheel.classList.add('spinning');
             
-            // Generate random spin: multiple full rotations + random final position
-            const minSpins = 5; // Minimum number of full rotations
-            const maxSpins = 8; // Maximum number of full rotations
-            const spins = Math.random() * (maxSpins - minSpins) + minSpins;
-            const finalAngle = Math.random() * 360;
-            const totalRotation = (spins * 360) + finalAngle;
+            // Enable transition for spinning
+            wheel.style.transition = 'transform 3s cubic-bezier(0.23, 1, 0.32, 1)';
+            
+            // Fixed spin amount: exactly 6 full rotations + random final position
+            const spins = 6; // Fixed number of rotations
+            const finalAngle = Math.random() * 360; // Only final position is random
+            const spinAmount = (spins * 360) + finalAngle;
+            
+            // Add to current rotation to prevent reset
+            currentRotation += spinAmount;
             
             // Apply the rotation
-            wheel.style.transform = `rotate(${totalRotation}deg)`;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
             
             // Calculate which section the pointer is pointing to
-            // The pointer points upward, so we need to account for that
-            const normalizedAngle = (360 - (totalRotation % 360)) % 360;
+            // Use only the final angle for determining result
+            const normalizedAngle = (360 - (finalAngle % 360)) % 360;
             
-            // Determine which section (each section is 60 degrees)
+            // Determine which section (each section is exactly 60 degrees)
             const sectionIndex = Math.floor(normalizedAngle / 60);
             const selectedSection = sections[sectionIndex];
             
             // Show result after animation completes
             setTimeout(() => {
+                // RESET EVERYTHING AFTER SPIN ENDS
+                wheel.style.transition = 'none'; // Remove transition
                 result.textContent = selectedSection.result;
                 result.style.opacity = '0';
                 result.style.transform = 'translateY(20px)';
@@ -354,6 +461,12 @@
                     result.style.opacity = '1';
                     result.style.transform = 'translateY(0)';
                 }, 100);
+                
+                // Reset result transition after animation
+                setTimeout(() => {
+                    result.style.transition = '';
+                    result.style.transform = '';
+                }, 600);
                 
                 isSpinning = false;
                 wheel.classList.remove('spinning');
@@ -373,12 +486,19 @@
             }
         });
 
-        // Handle footer links (you can customize these)
-        document.querySelectorAll('.footer-links a').forEach(link => {
+        // Handle footer links and navigation
+        document.querySelectorAll('.footer-links a, .nav-menu a').forEach(link => {
             link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const page = this.textContent;
-                alert(`${page} page - Add your content here!`);
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        alert(`${this.textContent} page - Add your content here!`);
+                    }
+                }
             });
         });
 
@@ -420,6 +540,41 @@
             sparkleInterval = setInterval(createSparkle, 200);
             setTimeout(() => clearInterval(sparkleInterval), 3000);
         });
+
+        // Disable context menu on wheel to prevent right-click issues
+        wheel.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Add keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                tapButton.click();
+            }
+        });
+    </script>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Yes or No Decision Wheel",
+      "description": "Free online spinning wheel tool for making yes or no decisions quickly and fairly",
+      "url": "https://yourusername.github.io/decision-wheel",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "Decision Wheel Team"
+      }
+    }
     </script>
 </body>
 </html>
