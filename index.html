@@ -101,4 +101,131 @@ No</textarea>
     const canvas = document.getElementById('wheel');
     const ctx = canvas.getContext('2d');
     const spinBtn = document.getElementById('spin');
-    const optionsEl = document.getElem
+    const optionsEl = document.getElementById('options');
+    const applyBtn = document.getElementById('apply');
+    const resultEl = document.getElementById('result');
+    const addInput = document.getElementById('addInput');
+    const addBtn = document.getElementById('addBtn');
+    const resetBtn = document.getElementById('reset');
+    const shuffleBtn = document.getElementById('randomize');
+    const saveBtn = document.getElementById('save');
+    const loadBtn = document.getElementById('load');
+    const downloadBtn = document.getElementById('download');
+    const shareUrl = document.getElementById('shareUrl');
+    const copyBtn = document.getElementById('copy');
+    const openBtn = document.getElementById('open');
+
+    let opts = ['Yes','No'];
+    let colors = [];
+    let rotation = 0; // radians
+    let spinning = false;
+
+    function pickColors(n){
+      const base = [ '#FFBC42','#F85F73','#8ED2C9','#7E57C2','#FFD166','#06D6A0' ];
+      const out = [];
+      for(let i=0;i<n;i++) out.push(base[i%base.length]);
+      return out.sort(()=>Math.random()-0.5);
+    }
+
+    function draw(){
+      const dpr = window.devicePixelRatio||1;
+      const size = Math.min(window.innerWidth,360)* (dpr>1? (800/360):1);
+      canvas.width = size; canvas.height = size; ctx.clearRect(0,0,size,size);
+      const cx = size/2, cy = size/2, r = size*0.45;
+      const step = 2*Math.PI/opts.length;
+
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotation);
+      for(let i=0;i<opts.length;i++){
+        const a = i*step;
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,r,a,a+step); ctx.closePath();
+        ctx.fillStyle = colors[i%colors.length]; ctx.fill();
+        // text
+        ctx.save(); ctx.rotate(a+step/2);
+        ctx.translate(r*0.6,0);
+        ctx.rotate(Math.PI/2);
+        ctx.fillStyle = '#071827'; ctx.font = `${Math.max(12, r*0.08)}px sans-serif`;
+        ctx.textAlign='center'; ctx.fillText(opts[i],0,0);
+        ctx.restore();
+      }
+      ctx.restore();
+      // center circle
+      ctx.beginPath(); ctx.arc(cx,cy, size*0.12,0,2*Math.PI); ctx.fillStyle='#071827'; ctx.fill();
+    }
+
+    function applyOptionsFromTextarea(){
+      const raw = optionsEl.value.trim();
+      if(!raw) return;
+      const lines = raw.split(/\n|,/).map(s=>s.trim()).filter(Boolean);
+      opts = lines;
+      colors = pickColors(opts.length);
+      draw();
+      updateShare();
+    }
+
+    applyBtn.addEventListener('click', ()=>{ applyOptionsFromTextarea(); resultEl.textContent='Result: —'; });
+    addBtn.addEventListener('click', ()=>{ const v=addInput.value.trim(); if(!v) return; optionsEl.value += (optionsEl.value.trim()? '\n':'')+v; addInput.value=''; });
+    resetBtn.addEventListener('click', ()=>{ optionsEl.value = 'Yes\nNo'; applyOptionsFromTextarea(); });
+    shuffleBtn.addEventListener('click', ()=>{ colors = pickColors(opts.length); draw(); });
+
+    function randBetween(a,b){return Math.random()*(b-a)+a}
+
+    spinBtn.addEventListener('click', ()=>{
+      if(spinning) return;
+      spinning = true; resultEl.textContent='Spinning...';
+      // compute target rotation so that a random slice lands under pointer
+      const idx = Math.floor(Math.random()*opts.length);
+      const step = 2*Math.PI/opts.length;
+      // pointer sits at top (rotation 0 -> slice 0 at top). We want slice idx at top.
+      const target = (-(idx*step) + (Math.PI*2*3) + randBetween(0,step)); // 3 full turns plus offset
+      const start = rotation;
+      const duration = 3000 + Math.random()*2000; // ms
+      const startTime = performance.now();
+
+      function animate(t){
+        const p = Math.min(1,(t-startTime)/duration);
+        const ease = 1 - Math.pow(1-p,3);
+        rotation = start + (target-start)*ease;
+        draw();
+        if(p<1) requestAnimationFrame(animate);
+        else { spinning=false; rotation = ((rotation % (Math.PI*2)) + Math.PI*2) % (Math.PI*2); const landed = Math.floor(((Math.PI*2 - rotation + (2*Math.PI/opts.length)/2)%(Math.PI*2)) / (2*Math.PI/opts.length)); resultEl.textContent = 'Result: ' + opts[landed]; }
+      }
+      requestAnimationFrame(animate);
+    });
+
+    // Share and storage
+    function updateShare(){
+      const data = encodeURIComponent(opts.join('|'));
+      const u = location.origin + location.pathname + '#o=' + data;
+      shareUrl.value = u; return u;
+    }
+
+    copyBtn.addEventListener('click', ()=>{ navigator.clipboard.writeText(shareUrl.value); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy URL',1200); });
+    openBtn.addEventListener('click', ()=>{ window.open(shareUrl.value,'_blank'); });
+
+    function saveLocal(){ localStorage.setItem('wheel_opts', JSON.stringify(opts)); saveBtn.textContent='Saved'; setTimeout(()=>saveBtn.textContent='Save',900); }
+    function loadLocal(){ const s=localStorage.getItem('wheel_opts'); if(!s) return alert('No saved wheel found'); opts=JSON.parse(s); optionsEl.value = opts.join('\n'); colors=pickColors(opts.length); draw(); }
+    saveBtn.addEventListener('click', saveLocal); loadBtn.addEventListener('click', loadLocal);
+
+    downloadBtn.addEventListener('click', ()=>{
+      const blob = new Blob([document.documentElement.outerHTML],{type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='wheelyesno.html'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    // parse hash for options
+    function parseHash(){
+      const h = location.hash.slice(1);
+      if(!h) return false;
+      const m = h.match(/(^|&)o=([^&]+)/);
+      if(m){ opts = decodeURIComponent(m[2]).split('|').filter(Boolean); optionsEl.value = opts.join('\n'); colors = pickColors(opts.length); draw(); return true; }
+      return false;
+    }
+
+    // init
+    if(!parseHash()) applyOptionsFromTextarea();
+    window.addEventListener('resize', draw);
+    updateShare();
+  })();
+  </script>
+</body>
+</html>
