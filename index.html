@@ -1,117 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yes Wheel</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f0f0f0;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-  }
-  canvas {
-    margin-top: 20px;
-  }
-  #spinButton {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 15px 25px;
-    background: #ff4081;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 18px;
-    cursor: pointer;
-    z-index: 10;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Random Spin Wheel — Wheelyesno</title>
+  <meta name="description" content="Spin the Random Wheel to make decisions! Tap the center to spin. Easy, fun, mobile-friendly wheel.">
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#f9f9f9; color:#333; text-align:center; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    h1 { margin-bottom: 10px; }
+    #wheel { width:100%; max-width:400px; height:400px; margin:20px auto; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,0.2); }
+    .wheel-wrapper { position: relative; display:inline-block; }
+    #spin-btn { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); background:#ff5722; color:#fff; border:none; border-radius:50%; width:80px; height:80px; font-size:18px; cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+    section { text-align:left; margin:30px 0; }
+    section h2 { margin-bottom:10px; }
+    footer { border-top:1px solid #ddd; display:flex; justify-content:space-around; padding:20px 0; font-size:14px; }
+    footer div { text-align:left; }
+    footer a { display:block; color:#0066cc; text-decoration:none; margin:4px 0; }
+    footer a:hover { text-decoration:underline; }
+    @media(max-width:500px){ footer { flex-direction: column; align-items: center; } footer div { margin-bottom: 16px; } }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Random Spin Wheel</h1>
+    <div class="wheel-wrapper">
+      <canvas id="wheel" width="400" height="400"></canvas>
+      <button id="spin-btn">TAP</button>
+    </div>
 
-<h1>Yes Wheel</h1>
-<div style="position: relative; display: inline-block;">
-  <canvas id="wheelCanvas" width="400" height="400"></canvas>
-  <button id="spinButton">TAP</button>
-</div>
+    <section>
+      <h2>How to Use</h2>
+      <ol>
+        <li>Tap the center button to spin the wheel.</li>
+        <li>Wheel will rotate and stop on a random segment.</li>
+        <li>An alert will show your result.</li>
+      </ol>
+    </section>
 
-<script>
-  const options = ["Yes","Yes","Yes","Yes","Yes","Yes"];
-  let startAngle = 0;
-  let arc = Math.PI / (options.length / 2);
-  let spinTimeout = null;
-  let spinAngleStart = 0;
-  let spinTime = 0;
-  let spinTimeTotal = 0;
-  const ctx = document.getElementById("wheelCanvas").getContext("2d");
+    <section>
+      <h2>What Is This?</h2>
+      <p>This is a simple spinning wheel tool to help you make decisions in a fun way. The wheel is randomized each time you tap the center. You can customize segments later!</p>
+    </section>
+  </div>
 
-  function drawWheel() {
-    const outsideRadius = 180;
-    const textRadius = 140;
-    const insideRadius = 40;
+  <footer>
+    <div>
+      <h3>More Wheels</h3>
+      <a href="#">NBA Wheel</a>
+      <a href="#">Name Picker Wheel</a>
+      <a href="#">Truth or Dare Wheel</a>
+    </div>
+    <div>
+      <h3>Learn More</h3>
+      <a href="#">About Us</a>
+      <a href="#">FAQs</a>
+      <a href="#">Contact Us</a>
+    </div>
+  </footer>
 
-    ctx.clearRect(0, 0, 400, 400);
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
-    ctx.font = 'bold 16px Arial';
+  <script>
+    const opts = ["Yes","Yes","Yes","Yes","Yes","Yes"];
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spin-btn");
+    let startAngle = 0;
+    const arc = Math.PI * 2 / opts.length;
 
-    for (let i = 0; i < options.length; i++) {
-      const angle = startAngle + i * arc;
-      ctx.fillStyle = i % 2 === 0 ? "#FFD700" : "#FF69B4";
+    function drawWheel() {
+      const rOut = canvas.width / 2 - 10;
+      const rIn = 30;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "18px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (let i = 0; i < opts.length; i++) {
+        const ang = startAngle + i * arc;
+        ctx.fillStyle = i % 2 === 0 ? "#FFEB3B" : "#FFC107";
+        ctx.beginPath();
+        ctx.moveTo(canvas.width/2, canvas.height/2);
+        ctx.arc(canvas.width/2, canvas.height/2, rOut, ang, ang + arc);
+        ctx.lineTo(canvas.width/2, canvas.height/2);
+        ctx.fill();
+        ctx.save();
+        ctx.translate(canvas.width/2 + Math.cos(ang + arc/2) * rOut * 0.7,
+                      canvas.height/2 + Math.sin(ang + arc/2) * rOut * 0.7);
+        ctx.rotate(ang + arc/2 + Math.PI/2);
+        ctx.fillStyle = "#333";
+        ctx.fillText(opts[i], 0, 0);
+        ctx.restore();
+      }
+      // center circle
       ctx.beginPath();
-      ctx.arc(200, 200, outsideRadius, angle, angle + arc, false);
-      ctx.arc(200, 200, insideRadius, angle + arc, angle, true);
+      ctx.arc(canvas.width/2, canvas.height/2, rIn, 0, Math.PI*2);
+      ctx.fillStyle = "#FF5722";
       ctx.fill();
-      ctx.save();
-      ctx.fillStyle = "black";
-      ctx.translate(200 + Math.cos(angle + arc / 2) * textRadius,
-                    200 + Math.sin(angle + arc / 2) * textRadius);
-      ctx.rotate(angle + arc / 2);
-      const text = options[i];
-      ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
-      ctx.restore();
     }
-  }
 
-  function rotateWheel() {
-    spinTime += 30;
-    if (spinTime >= spinTimeTotal) {
-      stopRotateWheel();
-      return;
+    function spin() {
+      const spinTimeTotal = 4000 + Math.random() * 2000;
+      const spinStart = Date.now();
+      const initialAngle = startAngle;
+
+      function animate() {
+        const elapsed = Date.now() - spinStart;
+        const progress = Math.min(elapsed / spinTimeTotal, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        startAngle = initialAngle + ease * (Math.random() * 10 + 10) * Math.PI;
+        drawWheel();
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          const degrees = (startAngle * 180 / Math.PI + 90) % 360;
+          const idx = Math.floor((360 - degrees) / (360 / opts.length)) % opts.length;
+          alert("Result: " + opts[idx]);
+        }
+      }
+      requestAnimationFrame(animate);
     }
-    const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
-    startAngle += (spinAngle * Math.PI / 180);
+
+    spinBtn.addEventListener("click", spin);
     drawWheel();
-    spinTimeout = setTimeout(rotateWheel, 30);
-  }
-
-  function stopRotateWheel() {
-    clearTimeout(spinTimeout);
-    const degrees = startAngle * 180 / Math.PI + 90;
-    const arcd = arc * 180 / Math.PI;
-    const index = Math.floor((360 - (degrees % 360)) / arcd) % options.length;
-    alert("Result: " + options[index]);
-  }
-
-  function easeOut(t, b, c, d) {
-    const ts = (t/=d)*t;
-    const tc = ts*t;
-    return b + c*(tc + -3*ts + 3*t);
-  }
-
-  document.getElementById("spinButton").addEventListener("click", function() {
-    spinAngleStart = Math.random() * 10 + 10;
-    spinTime = 0;
-    spinTimeTotal = Math.random() * 3000 + 4000;
-    rotateWheel();
-  });
-
-  drawWheel();
-</script>
-
+  </script>
 </body>
 </html>
