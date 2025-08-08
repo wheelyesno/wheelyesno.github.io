@@ -1,1 +1,26 @@
-helo
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Yes No Picker Wheel</title>
+  <style>
+    /* Add custom styling for wheel, buttons, backgrounds */
+  </style>
+</head>
+<body>
+  <div id="wheel-container">
+    <!-- Canvas or SVG for the wheel here -->
+    <button id="spin-btn">SPIN</button>
+    <div id="result"></div>
+  </div>
+  <script>
+    const options = ["Yes", "No", "Maybe"];
+    document.getElementById('spin-btn').onclick = function() {
+      const result = options[Math.floor(Math.random() * options.length)];
+      document.getElementById('result').innerText = "Result: " + result;
+      // Optionally, add result to a history log
+    }
+    // More JS for wheel animation and customization features
+  </script>
+</body>
+</html>
