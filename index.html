@@ -1,126 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Random Spin Wheel — Wheelyesno</title>
-  <meta name="description" content="Spin the Random Wheel to make decisions! Tap the center to spin. Easy, fun, mobile-friendly wheel.">
-  <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#f9f9f9; color:#333; text-align:center; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    h1 { margin-bottom: 10px; }
-    #wheel { width:100%; max-width:400px; height:400px; margin:20px auto; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,0.2); }
-    .wheel-wrapper { position: relative; display:inline-block; }
-    #spin-btn { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); background:#ff5722; color:#fff; border:none; border-radius:50%; width:80px; height:80px; font-size:18px; cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.2); }
-    section { text-align:left; margin:30px 0; }
-    section h2 { margin-bottom:10px; }
-    footer { border-top:1px solid #ddd; display:flex; justify-content:space-around; padding:20px 0; font-size:14px; }
-    footer div { text-align:left; }
-    footer a { display:block; color:#0066cc; text-decoration:none; margin:4px 0; }
-    footer a:hover { text-decoration:underline; }
-    @media(max-width:500px){ footer { flex-direction: column; align-items: center; } footer div { margin-bottom: 16px; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yes or No Decision Wheel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .wheel-container {
+            position: relative;
+            margin: 40px auto;
+            width: 350px;
+            height: 350px;
+        }
+
+        .wheel {
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            border: 8px solid #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+        }
+
+        .section:nth-child(1) { background: #FF6B6B; transform: rotate(0deg); }
+        .section:nth-child(2) { background: #4ECDC4; transform: rotate(60deg); }
+        .section:nth-child(3) { background: #45B7D1; transform: rotate(120deg); }
+        .section:nth-child(4) { background: #96CEB4; transform: rotate(180deg); }
+        .section:nth-child(5) { background: #FFEAA7; transform: rotate(240deg); }
+        .section:nth-child(6) { background: #DDA0DD; transform: rotate(300deg); }
+
+        .section-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .tap-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .tap-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .tap-button:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #fff;
+            z-index: 5;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px auto;
+            max-width: 800px;
+            color: white;
+        }
+
+        .info-section h2 {
+            margin-bottom: 20px;
+            color: #FFE4E1;
+        }
+
+        .info-section ul {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .info-section li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            background: rgba(0,0,0,0.2);
+            width: 100%;
+            color: white;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .wheel-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .wheel {
+                width: 280px;
+                height: 280px;
+            }
+
+            .tap-button {
+                width: 60px;
+                height: 60px;
+                font-size: 14px;
+            }
+
+            .footer-links {
+                gap: 15px;
+            }
+
+            .footer-links a {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+
+        .spinning {
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Random Spin Wheel</h1>
-    <div class="wheel-wrapper">
-      <canvas id="wheel" width="400" height="400"></canvas>
-      <button id="spin-btn">TAP</button>
+    <div class="container">
+        <h1>🎯 Yes or No Decision Wheel</h1>
+        
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel">
+                <div class="section">
+                    <div class="section-text">YES</div>
+                </div>
+                <div class="section">
+                    <div class="section-text">NO</div>
+                </div>
+                <div class="section">
+                    <div class="section-text">YES</div>
+                </div>
+                <div class="section">
+                    <div class="section-text">NO</div>
+                </div>
+                <div class="section">
+                    <div class="section-text">YES</div>
+                </div>
+                <div class="section">
+                    <div class="section-text">NO</div>
+                </div>
+            </div>
+            <button class="tap-button" id="tapButton">TAP</button>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="info-section">
+            <h2>🎲 How to Use</h2>
+            <ul>
+                <li><strong>Simple Decision Making:</strong> Tap the center button to spin the wheel and get your yes or no answer</li>
+                <li><strong>Random Results:</strong> Each spin is completely random, giving you unbiased decisions</li>
+                <li><strong>Perfect for:</strong> Quick decisions, settling debates, choosing between options, or just having fun</li>
+                <li><strong>Mobile Friendly:</strong> Works perfectly on phones, tablets, and desktop computers</li>
+                <li><strong>No Registration:</strong> Start using immediately - no sign-up required</li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h2>✨ What is This?</h2>
+            <p>The Yes or No Decision Wheel is a fun and simple tool to help you make quick decisions. When you're stuck between two choices or need a random yes/no answer, just tap the button and let the colorful wheel decide for you! The wheel contains 6 sections with equal chances for "Yes" and "No" results.</p>
+        </div>
+
+        <div class="info-section">
+            <h2>🌟 Features</h2>
+            <ul>
+                <li><strong>Colorful Design:</strong> Beautiful gradient colors make every spin visually appealing</li>
+                <li><strong>Smooth Animation:</strong> Realistic spinning physics with gradual slowdown</li>
+                <li><strong>Equal Probability:</strong> Fair 50/50 chance for yes or no results</li>
+                <li><strong>Responsive Design:</strong> Looks great on all devices and screen sizes</li>
+                <li><strong>Instant Results:</strong> Get your answer in just a few seconds</li>
+                <li><strong>Unlimited Spins:</strong> Spin as many times as you want, completely free</li>
+            </ul>
+        </div>
     </div>
 
-    <section>
-      <h2>How to Use</h2>
-      <ol>
-        <li>Tap the center button to spin the wheel.</li>
-        <li>Wheel will rotate and stop on a random segment.</li>
-        <li>An alert will show your result.</li>
-      </ol>
-    </section>
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#about">About Us</a>
+            <a href="#contact">Contact Us</a>
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms of Service</a>
+            <a href="#support">Support</a>
+            <a href="#feedback">Feedback</a>
+        </div>
+        <div class="footer-text">
+            <p>&copy; 2025 Yes or No Decision Wheel. Made with ❤️ for better decisions.</p>
+        </div>
+    </footer>
 
-    <section>
-      <h2>What Is This?</h2>
-      <p>This is a simple spinning wheel tool to help you make decisions in a fun way. The wheel is randomized each time you tap the center. You can customize segments later!</p>
-    </section>
-  </div>
+    <script>
+        const wheel = document.getElementById('wheel');
+        const tapButton = document.getElementById('tapButton');
+        const result = document.getElementById('result');
+        
+        let isSpinning = false;
 
-  <footer>
-    <div>
-      <h3>More Wheels</h3>
-      <a href="#">NBA Wheel</a>
-      <a href="#">Name Picker Wheel</a>
-      <a href="#">Truth or Dare Wheel</a>
-    </div>
-    <div>
-      <h3>Learn More</h3>
-      <a href="#">About Us</a>
-      <a href="#">FAQs</a>
-      <a href="#">Contact Us</a>
-    </div>
-  </footer>
+        // Define the sections and their corresponding results
+        const sections = [
+            { angle: 30, result: 'YES! 🎉' },   // Section 1 center
+            { angle: 90, result: 'NO! 🚫' },    // Section 2 center  
+            { angle: 150, result: 'YES! 🎉' },  // Section 3 center
+            { angle: 210, result: 'NO! 🚫' },   // Section 4 center
+            { angle: 270, result: 'YES! 🎉' },  // Section 5 center
+            { angle: 330, result: 'NO! 🚫' }    // Section 6 center
+        ];
 
-  <script>
-    const opts = ["Yes","Yes","Yes","Yes","Yes","Yes"];
-    const canvas = document.getElementById("wheel");
-    const ctx = canvas.getContext("2d");
-    const spinBtn = document.getElementById("spin-btn");
-    let startAngle = 0;
-    const arc = Math.PI * 2 / opts.length;
+        tapButton.addEventListener('click', function() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            result.textContent = '';
+            wheel.classList.add('spinning');
+            
+            // Generate random spin: multiple full rotations + random final position
+            const minSpins = 5; // Minimum number of full rotations
+            const maxSpins = 8; // Maximum number of full rotations
+            const spins = Math.random() * (maxSpins - minSpins) + minSpins;
+            const finalAngle = Math.random() * 360;
+            const totalRotation = (spins * 360) + finalAngle;
+            
+            // Apply the rotation
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+            
+            // Calculate which section the pointer is pointing to
+            // The pointer points upward, so we need to account for that
+            const normalizedAngle = (360 - (totalRotation % 360)) % 360;
+            
+            // Determine which section (each section is 60 degrees)
+            const sectionIndex = Math.floor(normalizedAngle / 60);
+            const selectedSection = sections[sectionIndex];
+            
+            // Show result after animation completes
+            setTimeout(() => {
+                result.textContent = selectedSection.result;
+                result.style.opacity = '0';
+                result.style.transform = 'translateY(20px)';
+                
+                // Animate result appearance
+                setTimeout(() => {
+                    result.style.transition = 'all 0.5s ease';
+                    result.style.opacity = '1';
+                    result.style.transform = 'translateY(0)';
+                }, 100);
+                
+                isSpinning = false;
+                wheel.classList.remove('spinning');
+            }, 3000);
+        });
 
-    function drawWheel() {
-      const rOut = canvas.width / 2 - 10;
-      const rIn = 30;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.font = "18px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      for (let i = 0; i < opts.length; i++) {
-        const ang = startAngle + i * arc;
-        ctx.fillStyle = i % 2 === 0 ? "#FFEB3B" : "#FFC107";
-        ctx.beginPath();
-        ctx.moveTo(canvas.width/2, canvas.height/2);
-        ctx.arc(canvas.width/2, canvas.height/2, rOut, ang, ang + arc);
-        ctx.lineTo(canvas.width/2, canvas.height/2);
-        ctx.fill();
-        ctx.save();
-        ctx.translate(canvas.width/2 + Math.cos(ang + arc/2) * rOut * 0.7,
-                      canvas.height/2 + Math.sin(ang + arc/2) * rOut * 0.7);
-        ctx.rotate(ang + arc/2 + Math.PI/2);
-        ctx.fillStyle = "#333";
-        ctx.fillText(opts[i], 0, 0);
-        ctx.restore();
-      }
-      // center circle
-      ctx.beginPath();
-      ctx.arc(canvas.width/2, canvas.height/2, rIn, 0, Math.PI*2);
-      ctx.fillStyle = "#FF5722";
-      ctx.fill();
-    }
+        // Add some fun interactions
+        tapButton.addEventListener('mouseenter', function() {
+            if (!isSpinning) {
+                this.textContent = 'SPIN!';
+            }
+        });
 
-    function spin() {
-      const spinTimeTotal = 4000 + Math.random() * 2000;
-      const spinStart = Date.now();
-      const initialAngle = startAngle;
+        tapButton.addEventListener('mouseleave', function() {
+            if (!isSpinning) {
+                this.textContent = 'TAP';
+            }
+        });
 
-      function animate() {
-        const elapsed = Date.now() - spinStart;
-        const progress = Math.min(elapsed / spinTimeTotal, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
-        startAngle = initialAngle + ease * (Math.random() * 10 + 10) * Math.PI;
-        drawWheel();
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          const degrees = (startAngle * 180 / Math.PI + 90) % 360;
-          const idx = Math.floor((360 - degrees) / (360 / opts.length)) % opts.length;
-          alert("Result: " + opts[idx]);
+        // Handle footer links (you can customize these)
+        document.querySelectorAll('.footer-links a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.textContent;
+                alert(`${page} page - Add your content here!`);
+            });
+        });
+
+        // Add some sparkle effects when spinning
+        function createSparkle() {
+            if (!isSpinning) return;
+            
+            const sparkle = document.createElement('div');
+            sparkle.style.position = 'absolute';
+            sparkle.style.width = '4px';
+            sparkle.style.height = '4px';
+            sparkle.style.background = 'white';
+            sparkle.style.borderRadius = '50%';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '15';
+            
+            const wheelRect = wheel.getBoundingClientRect();
+            const x = Math.random() * wheelRect.width;
+            const y = Math.random() * wheelRect.height;
+            
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            
+            wheel.appendChild(sparkle);
+            
+            // Animate sparkle
+            sparkle.style.transition = 'all 1s ease-out';
+            setTimeout(() => {
+                sparkle.style.opacity = '0';
+                sparkle.style.transform = 'scale(2)';
+                setTimeout(() => sparkle.remove(), 1000);
+            }, 50);
         }
-      }
-      requestAnimationFrame(animate);
-    }
 
-    spinBtn.addEventListener("click", spin);
-    drawWheel();
-  </script>
+        // Create sparkles during spinning
+        let sparkleInterval;
+        tapButton.addEventListener('click', function() {
+            if (sparkleInterval) clearInterval(sparkleInterval);
+            sparkleInterval = setInterval(createSparkle, 200);
+            setTimeout(() => clearInterval(sparkleInterval), 3000);
+        });
+    </script>
 </body>
 </html>
