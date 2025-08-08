@@ -1,26 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Yes No Picker Wheel</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wheelyesno — Yes or No Wheel</title>
+  <meta name="description" content="Spin a colorful decision wheel: Yes or No, Maybe, or your custom options. Mobile friendly, shareable, and ready for GitHub Pages." />
   <style>
-    /* Add custom styling for wheel, buttons, backgrounds */
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ff6b6b;--muted:#9aa6b2;color-scheme:dark}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6eef6;background:linear-gradient(180deg,#071021 0%, #071827 100%)}
+    .wrap{max-width:980px;margin:24px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    header h1{font-size:20px;margin:0}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:18px}
+    /* wheel area */
+    .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+    canvas#wheel{width:320px;height:320px;border-radius:50%;background:transparent}
+    .pointer{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid var(--accent);margin-top:-6px}
+    button{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+    .muted{color:var(--muted);font-size:14px}
+    /* controls */
+    .controls{display:flex;flex-direction:column;gap:8px}
+    textarea,input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:8px}
+    .small{padding:8px 10px;font-size:14px}
+    .footer{margin-top:12px;font-size:13px;color:var(--muted)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr;}.wheel-wrap{order:0}}
   </style>
 </head>
 <body>
-  <div id="wheel-container">
-    <!-- Canvas or SVG for the wheel here -->
-    <button id="spin-btn">SPIN</button>
-    <div id="result"></div>
+  <div class="wrap">
+    <header>
+      <h1>Wheelyesno — Yes / No Wheel</h1>
+      <nav>
+        <a href="#help">Help</a>
+        <a href="#share">Share</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <div class="card wheel-wrap">
+        <canvas id="wheel" width="800" height="800"></canvas>
+        <div class="pointer" id="pointer"></div>
+        <div style="display:flex;gap:8px">
+          <button id="spin" class="small">SPIN</button>
+          <button id="randomize" class="small" title="Randomize colors">Shuffle</button>
+          <button id="reset" class="small" title="Reset default">Reset</button>
+        </div>
+        <div id="result" class="muted" style="margin-top:8px">Result: —</div>
+      </div>
+
+      <div class="card controls">
+        <label class="muted">Options (one per line). Use commas for quick multi: yes,no,maybe</label>
+        <textarea id="options" rows="6">Yes
+No</textarea>
+        <div class="row">
+          <input id="addInput" type="text" placeholder="Add option and press +" />
+          <button id="addBtn" class="small">+</button>
+        </div>
+        <div class="row">
+          <button id="apply" class="small">Apply</button>
+          <button id="save" class="small">Save</button>
+          <button id="load" class="small">Load</button>
+          <button id="download" class="small">Download</button>
+        </div>
+
+        <details>
+          <summary class="muted">Advanced / Share</summary>
+          <div style="margin-top:8px">
+            <label class="muted">Share URL</label>
+            <input id="shareUrl" type="text" readonly />
+            <div style="display:flex;margin-top:6px;gap:8px">
+              <button id="copy" class="small">Copy URL</button>
+              <button id="open" class="small">Open</button>
+            </div>
+          </div>
+        </details>
+
+        <div class="footer">Tip: compress images and keep the page small for fast loads on GitHub Pages. Want it live? Upload this single file as <code>index.html</code> to your <code>wheelyesno.github.io</code> repo.</div>
+      </div>
+    </div>
+
+    <section id="help" style="margin-top:18px" class="card">
+      <h3>Help &amp; Usage</h3>
+      <p class="muted">Use the textbox to add options. Click <strong>Apply</strong> to redraw the wheel. Press <strong>Spin</strong> to spin and land on a choice. Use Save / Load to store custom wheels in your browser. Use Share to create a link with the options encoded in the URL.</p>
+      <ul class="muted">
+        <li>Mobile-friendly — tap <em>Spin</em>.</li>
+        <li>Use <code>yes,no,maybe</code> (comma separated) to quickly add several options.</li>
+        <li>Download saves the current page as an HTML file you can host on GitHub Pages.</li>
+      </ul>
+    </section>
+
   </div>
+
   <script>
-    const options = ["Yes", "No", "Maybe"];
-    document.getElementById('spin-btn').onclick = function() {
-      const result = options[Math.floor(Math.random() * options.length)];
-      document.getElementById('result').innerText = "Result: " + result;
-      // Optionally, add result to a history log
-    }
-    // More JS for wheel animation and customization features
-  </script>
-</body>
-</html>
+  // Simple wheel implementation with canvas and hash-based share
+  (function(){
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const spinBtn = document.getElementById('spin');
+    const optionsEl = document.getElem
